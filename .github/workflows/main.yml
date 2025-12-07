@@ -1,0 +1,36 @@
+name: Build Android FNF Engine
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: '4.2.5'
+
+      - name: Install HaxeLibs
+        run: |
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup android
+
+      - name: Build APK
+        run: |
+          lime build android -release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: FNF-Engine-APK
+          path: export/release/android/bin/app-release.apk
